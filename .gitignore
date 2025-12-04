@@ -47,3 +47,7 @@ yarn-error.log*
 /src/public/css/
 /src/public/js/
 .claude/
+
+# Claude
+.claude/
+claude.md
