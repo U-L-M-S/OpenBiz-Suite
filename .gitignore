@@ -44,3 +44,4 @@ yarn-error.log*
 /src/public/build/
 /src/public/css/
 /src/public/js/
+.claude/

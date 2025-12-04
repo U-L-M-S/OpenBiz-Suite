@@ -19,7 +19,12 @@ RUN apk add --no-cache \
     libxml2-dev \
     nodejs \
     npm \
-    supervisor
+    supervisor \
+    autoconf \
+    gcc \
+    g++ \
+    make \
+    linux-headers
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
