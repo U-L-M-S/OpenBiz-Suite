@@ -10,6 +10,11 @@ use App\Http\Controllers\Api\V1\AssetController;
 use App\Http\Controllers\Api\V1\AssetCategoryController;
 use App\Http\Controllers\Api\V1\AssetAssignmentController;
 use App\Http\Controllers\Api\V1\AssetMaintenanceController;
+use App\Http\Controllers\Api\V1\CourseController;
+use App\Http\Controllers\Api\V1\LessonController;
+use App\Http\Controllers\Api\V1\QuizController;
+use App\Http\Controllers\Api\V1\EnrollmentController;
+use App\Http\Controllers\Api\V1\BadgeController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -59,4 +64,32 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
 
     Route::apiResource('asset-maintenances', AssetMaintenanceController::class);
     Route::post('/asset-maintenances/{assetMaintenance}/complete', [AssetMaintenanceController::class, 'complete']);
+
+    // LMS Module
+    Route::apiResource('courses', CourseController::class);
+    Route::post('/courses/{course}/publish', [CourseController::class, 'publish']);
+    Route::post('/courses/{course}/unpublish', [CourseController::class, 'unpublish']);
+
+    Route::get('/lessons/{lesson}', [LessonController::class, 'show']);
+    Route::post('/lessons/{lesson}/start', [LessonController::class, 'start']);
+    Route::post('/lessons/{lesson}/complete', [LessonController::class, 'complete']);
+    Route::post('/lessons/{lesson}/track-time', [LessonController::class, 'trackTime']);
+
+    Route::get('/quizzes', [QuizController::class, 'index']);
+    Route::get('/quizzes/{quiz}', [QuizController::class, 'show']);
+    Route::post('/quizzes/{quiz}/start', [QuizController::class, 'start']);
+    Route::post('/quizzes/{quiz}/attempts/{attempt}/submit', [QuizController::class, 'submit']);
+    Route::get('/quizzes/{quiz}/attempts', [QuizController::class, 'attempts']);
+
+    Route::get('/enrollments', [EnrollmentController::class, 'index']);
+    Route::post('/enrollments', [EnrollmentController::class, 'store']);
+    Route::get('/enrollments/{enrollment}', [EnrollmentController::class, 'show']);
+    Route::get('/enrollments/{enrollment}/progress', [EnrollmentController::class, 'progress']);
+    Route::get('/my-enrollments', [EnrollmentController::class, 'myEnrollments']);
+
+    Route::get('/badges', [BadgeController::class, 'index']);
+    Route::get('/badges/{badge}', [BadgeController::class, 'show']);
+    Route::get('/my-badges', [BadgeController::class, 'myBadges']);
+    Route::get('/my-points', [BadgeController::class, 'myPoints']);
+    Route::get('/leaderboard', [BadgeController::class, 'leaderboard']);
 });
