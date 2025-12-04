@@ -1,0 +1,42 @@
+# Environment
+.env
+.env.backup
+.env.production
+
+# Laravel
+/src/vendor/
+/src/node_modules/
+/src/public/hot
+/src/public/storage
+/src/storage/*.key
+/src/storage/logs/
+/src/storage/framework/cache/
+/src/storage/framework/sessions/
+/src/storage/framework/views/
+/src/bootstrap/cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+/docker/traefik/certs/*.pem
+/docker/mysql/data/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build
+/src/public/build/
+/src/public/css/
+/src/public/js/
