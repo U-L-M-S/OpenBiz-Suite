@@ -1,0 +1,364 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type Query {
+    "Get the currently authenticated user"
+    me: User @auth
+
+    "List all employees"
+    employees(
+        first: Int @limit
+        page: Int @page
+    ): EmployeePaginator @paginate(defaultCount: 15) @guard
+
+    "Get a single employee by ID"
+    employee(id: ID! @eq): Employee @find @guard
+
+    "List all departments"
+    departments(
+        first: Int @limit
+        page: Int @page
+    ): DepartmentPaginator @paginate(defaultCount: 15) @guard
+
+    "List all courses"
+    courses(
+        first: Int @limit
+        page: Int @page
+        published_only: Boolean @scope(name: "published")
+    ): CoursePaginator @paginate(defaultCount: 15) @guard
+
+    "Get a single course by ID"
+    course(id: ID! @eq): Course @find @guard
+
+    "List all products"
+    products(
+        first: Int @limit
+        page: Int @page
+        status: ProductStatus @eq
+    ): ProductPaginator @paginate(defaultCount: 15) @guard
+
+    "Get a single product by ID"
+    product(id: ID! @eq): Product @find @guard
+
+    "List all orders"
+    orders(
+        first: Int @limit
+        page: Int @page
+        status: OrderStatus @eq
+    ): OrderPaginator @paginate(defaultCount: 15) @guard
+
+    "Get a single order by ID"
+    order(id: ID! @eq): Order @find @guard
+}
+
+type Mutation {
+    "Create a new employee"
+    createEmployee(input: CreateEmployeeInput! @spread): Employee @create @guard
+
+    "Update an existing employee"
+    updateEmployee(id: ID!, input: UpdateEmployeeInput! @spread): Employee @update @guard
+
+    "Delete an employee"
+    deleteEmployee(id: ID!): Employee @delete @guard
+
+    "Create a new course"
+    createCourse(input: CreateCourseInput! @spread): Course @create @guard
+
+    "Update a course"
+    updateCourse(id: ID!, input: UpdateCourseInput! @spread): Course @update @guard
+
+    "Publish a course"
+    publishCourse(id: ID!): Course @guard @field(resolver: "App\\GraphQL\\Mutations\\CourseResolver@publish")
+
+    "Unpublish a course"
+    unpublishCourse(id: ID!): Course @guard @field(resolver: "App\\GraphQL\\Mutations\\CourseResolver@unpublish")
+
+    "Enroll in a course"
+    enrollInCourse(course_id: ID!): Enrollment @guard @field(resolver: "App\\GraphQL\\Mutations\\CourseResolver@enroll")
+
+    "Create an order"
+    createOrder(input: CreateOrderInput! @spread): Order @create @guard
+
+    "Update order status"
+    updateOrderStatus(id: ID!, status: OrderStatus!): Order @guard @field(resolver: "App\\GraphQL\\Mutations\\OrderResolver@updateStatus")
+
+    "AI: Generate course description"
+    generateCourseDescription(title: String!, level: String!): AIResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\AIResolver@generateCourseDescription")
+
+    "AI: Generate quiz questions"
+    generateQuizQuestions(topic: String!, count: Int!): AIResponse @guard @field(resolver: "App\\GraphQL\\Mutations\\AIResolver@generateQuizQuestions")
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Employee {
+    id: ID!
+    employee_id: String!
+    first_name: String!
+    last_name: String!
+    email: String!
+    phone: String
+    status: String!
+    department: Department @belongsTo
+    position: Position @belongsTo
+    hire_date: DateTime
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Department {
+    id: ID!
+    name: String!
+    description: String
+    employees: [Employee!]! @hasMany
+    employees_count: Int @count(relation: "employees")
+    created_at: DateTime!
+}
+
+type Position {
+    id: ID!
+    name: String!
+    description: String
+    min_salary: Float
+    max_salary: Float
+}
+
+type Course {
+    id: ID!
+    title: String!
+    slug: String!
+    description: String
+    level: CourseLevel!
+    duration_minutes: Int
+    price: Float!
+    is_free: Boolean!
+    is_published: Boolean!
+    is_featured: Boolean!
+    instructor: User @belongsTo
+    modules: [CourseModule!]! @hasMany
+    enrollments_count: Int @count(relation: "enrollments")
+    published_at: DateTime
+    created_at: DateTime!
+}
+
+type CourseModule {
+    id: ID!
+    title: String!
+    description: String
+    order: Int!
+    lessons: [Lesson!]! @hasMany
+    is_published: Boolean!
+}
+
+type Lesson {
+    id: ID!
+    title: String!
+    type: LessonType!
+    content: String
+    video_url: String
+    duration_minutes: Int
+    order: Int!
+    is_published: Boolean!
+}
+
+type Enrollment {
+    id: ID!
+    user: User! @belongsTo
+    course: Course! @belongsTo
+    status: EnrollmentStatus!
+    progress_percentage: Int!
+    enrolled_at: DateTime!
+    completed_at: DateTime
+}
+
+type Product {
+    id: ID!
+    name: String!
+    slug: String!
+    sku: String
+    description: String
+    price: Float!
+    sale_price: Float
+    stock_quantity: Int!
+    status: ProductStatus!
+    is_featured: Boolean!
+    category: ProductCategory @belongsTo
+    created_at: DateTime!
+}
+
+type ProductCategory {
+    id: ID!
+    name: String!
+    slug: String!
+    products: [Product!]! @hasMany
+    products_count: Int @count(relation: "products")
+}
+
+type Order {
+    id: ID!
+    order_number: String!
+    status: OrderStatus!
+    payment_status: String!
+    subtotal: Float!
+    tax: Float!
+    shipping: Float!
+    discount: Float!
+    total: Float!
+    user: User @belongsTo
+    items: [OrderItem!]! @hasMany
+    created_at: DateTime!
+}
+
+type OrderItem {
+    id: ID!
+    product_name: String!
+    product_sku: String
+    quantity: Int!
+    unit_price: Float!
+    total: Float!
+}
+
+type AIResponse {
+    success: Boolean!
+    content: String
+    error: String
+}
+
+# Enums
+enum CourseLevel {
+    beginner
+    intermediate
+    advanced
+}
+
+enum LessonType {
+    video
+    text
+    pdf
+    quiz
+    assignment
+}
+
+enum EnrollmentStatus {
+    enrolled
+    in_progress
+    completed
+    dropped
+}
+
+enum ProductStatus {
+    draft
+    active
+    inactive
+    archived
+}
+
+enum OrderStatus {
+    pending
+    processing
+    shipped
+    delivered
+    cancelled
+    refunded
+}
+
+# Input Types
+input CreateEmployeeInput {
+    first_name: String!
+    last_name: String!
+    email: String!
+    phone: String
+    department_id: ID
+    position_id: ID
+    status: String = "active"
+}
+
+input UpdateEmployeeInput {
+    first_name: String
+    last_name: String
+    email: String
+    phone: String
+    department_id: ID
+    position_id: ID
+    status: String
+}
+
+input CreateCourseInput {
+    title: String!
+    description: String
+    level: CourseLevel = beginner
+    duration_minutes: Int
+    price: Float = 0
+    is_free: Boolean = true
+}
+
+input UpdateCourseInput {
+    title: String
+    description: String
+    level: CourseLevel
+    duration_minutes: Int
+    price: Float
+    is_free: Boolean
+}
+
+input CreateOrderInput {
+    items: [OrderItemInput!]!
+    billing_address: AddressInput!
+    shipping_address: AddressInput
+}
+
+input OrderItemInput {
+    product_id: ID!
+    quantity: Int!
+}
+
+input AddressInput {
+    name: String!
+    address: String!
+    city: String!
+    postal_code: String!
+    country: String!
+}
+
+# Paginator Types
+type EmployeePaginator {
+    data: [Employee!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type DepartmentPaginator {
+    data: [Department!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type CoursePaginator {
+    data: [Course!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type ProductPaginator {
+    data: [Product!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type OrderPaginator {
+    data: [Order!]!
+    paginatorInfo: PaginatorInfo!
+}
+
+type PaginatorInfo {
+    count: Int!
+    currentPage: Int!
+    firstItem: Int
+    hasMorePages: Boolean!
+    lastItem: Int
+    lastPage: Int!
+    perPage: Int!
+    total: Int!
+}
