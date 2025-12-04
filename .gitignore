@@ -1,6 +1,8 @@
-# Documentation (exclude all .md except README.md)
+# Documentation (exclude all .md except specific files)
 *.md
 !README.md
+!PROJECT_STATUS.md
+!TESTING.md
 
 # Environment
 .env
