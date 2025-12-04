@@ -13,11 +13,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Seed tenants first
+        $this->call([
+            TenantSeeder::class,
+        ]);
+
+        // Create test users for demo tenant
+        User::factory()->create([
+            'tenant_id' => 1,
+            'name' => 'Demo Admin',
+            'email' => 'admin@demo.com',
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'tenant_id' => 1,
+            'name' => 'Demo User',
+            'email' => 'user@demo.com',
         ]);
     }
 }
