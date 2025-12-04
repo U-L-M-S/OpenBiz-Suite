@@ -16,19 +16,29 @@ class DatabaseSeeder extends Seeder
         // Seed tenants first
         $this->call([
             TenantSeeder::class,
+            RolePermissionSeeder::class,
         ]);
 
-        // Create test users for demo tenant
-        User::factory()->create([
+        // Create test users for demo tenant with roles
+        $admin = User::factory()->create([
             'tenant_id' => 1,
             'name' => 'Demo Admin',
             'email' => 'admin@demo.com',
         ]);
+        $admin->assignRole('Super Admin');
 
-        User::factory()->create([
+        $hrManager = User::factory()->create([
             'tenant_id' => 1,
-            'name' => 'Demo User',
+            'name' => 'HR Manager',
+            'email' => 'hr@demo.com',
+        ]);
+        $hrManager->assignRole('HR Manager');
+
+        $user = User::factory()->create([
+            'tenant_id' => 1,
+            'name' => 'Demo Employee',
             'email' => 'user@demo.com',
         ]);
+        $user->assignRole('Employee');
     }
 }
