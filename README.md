@@ -48,8 +48,7 @@ Open http://localhost in your browser.
 
 ```bash
 cp .env.example .env
-docker compose build
-docker compose up -d
+docker compose up -d --build
 ```
 
 The application container will automatically:
