@@ -7,7 +7,8 @@ HR, Assets, LMS, and more - all in one place.
 
 ## Architecture
 
-<img width="1360" height="986" alt="grafik" src="https://github.com/user-attachments/assets/143acba5-cc1c-41ff-b3c5-ad2baa22d688" />
+<img width="1360" height="986" alt="grafik" src="https://github.com/user-attachments/assets/8fd4b78e-cdcc-40a7-9c51-a7bc1cf3a594" />
+
 
 ---
 
