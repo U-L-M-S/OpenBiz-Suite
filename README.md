@@ -50,10 +50,13 @@ Open http://localhost in your browser.
 cp .env.example .env
 docker compose build
 docker compose up -d
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --seed
 ```
+
+The application container will automatically:
+- Install Composer dependencies
+- Generate application key
+- Run database migrations
+- Seed the database (if empty)
 
 ---
 

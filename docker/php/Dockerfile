@@ -24,7 +24,8 @@ RUN apk add --no-cache \
     gcc \
     g++ \
     make \
-    linux-headers
+    linux-headers \
+    netcat-openbsd
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -57,6 +58,10 @@ WORKDIR /var/www/html
 COPY php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY www.conf /usr/local/etc/php-fpm.d/www.conf
 
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Set permissions
 RUN chown -R www:www /var/www/html
 
@@ -64,4 +69,5 @@ USER www
 
 EXPOSE 9000
 
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["php-fpm"]
